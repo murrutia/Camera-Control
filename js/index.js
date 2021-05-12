@@ -1,6 +1,8 @@
-
+// const { CameraFactory } = require('./cameras/CameraFactory')
 var camera_ip = "192.168.0.190";
-var base_url = "http://" + camera_ip + "/cgi-bin";
+// var base_url = "http://" + camera_ip + "/cgi-bin";
+var base_url = "http://" + camera_ip + "/axis-cgi/com/";
+
 // config defaults
 var defaults = {
     ip: camera_ip,
@@ -58,7 +60,8 @@ function config_init () {
 
 	// set the initial IP value for the camera ip input
 	$("#cam_ip").val(config.ip);
-	base_url = "http://" + config.ip + "/cgi-bin";
+	// base_url = "http://" + config.ip + "/cgi-bin";
+	base_url = "http://" + config.ip + "/axis-cgi/com/";
 
 	// set the camera's initial configuration for each value in the saved config object
 	config_setting("flip", config.flip);
@@ -74,6 +77,8 @@ function config_init () {
 	$("#tiltspeed").val(config.tiltspeed);
 	$("#focusspeed").val(config.focusspeed);
 	$("#autopaninterval").val(config.autopaninterval);
+
+	// var camera = CameraFactory.generate('generic', config.ip_address)
 
 	// save_config();
 
@@ -395,26 +400,32 @@ function cam_pantilt (camera, action) {
 
 			if (config.invertcontrols == "1") {
 				var loc = base_url + "/ptzctrl.cgi?ptzcmd&right&" + config.panspeed + "&" + config.tiltspeed + "";
+				var loc = base_url + "/ptz.cgi?move=right&speed=" + config.panspeed;
 			} else {
-				var loc = base_url + "/ptzctrl.cgi?ptzcmd&left&" + config.panspeed + "&" + config.tiltspeed + "";
+				var loc = base_url + "/ptzctrl.cgi?ptzcmdleft&" + config.panspeed + "&" + config.tiltspeed + "";
+				var loc = base_url + "/ptz.cgi?move=left&speed=" + config.panspeed;
 			}
 			break;
-
+			
 		case 'right':
-
+			
 			if (config.invertcontrols == "1") {
 				var loc = base_url + "/ptzctrl.cgi?ptzcmd&left&" + config.panspeed + "&" + config.tiltspeed + "";
+				var loc = base_url + "/ptz.cgi?move=left&speed=" + config.panspeed;
 			} else {
 				var loc = base_url + "/ptzctrl.cgi?ptzcmd&right&" + config.panspeed + "&" + config.tiltspeed + "";
+				var loc = base_url + "/ptz.cgi?move=right&speed=" + config.panspeed;
 			}
-			break;
-
+		break;
+			
 		case 'up':
-
+				
 			if (config.invertcontrols == "1") {
 				var loc = base_url + "/ptzctrl.cgi?ptzcmd&down&" + config.panspeed + "&" + config.tiltspeed + "";
+				var loc = base_url + "/ptz.cgi?move=down&speed=" + config.tiltspeed;
 			} else {
 				var loc = base_url + "/ptzctrl.cgi?ptzcmd&up&" + config.panspeed + "&" + config.tiltspeed + "";
+				var loc = base_url + "/ptz.cgi?move=up&speed=" + config.tiltspeed;
 			}
 			break;
 
@@ -422,19 +433,23 @@ function cam_pantilt (camera, action) {
 
 			if (config.invertcontrols == "1") {
 				var loc = base_url + "/ptzctrl.cgi?ptzcmd&up&" + config.panspeed + "&" + config.tiltspeed + "";
+				var loc = base_url + "/ptz.cgi?move=up&speed=" + config.tiltspeed;
 			} else {
 				var loc = base_url + "/ptzctrl.cgi?ptzcmd&down&" + config.panspeed + "&" + config.tiltspeed + "";
+				var loc = base_url + "/ptz.cgi?move=down&speed=" + config.tiltspeed;
 			}
 			break;
 
 		case 'home':
 
 			var loc = base_url + "/ptzctrl.cgi?ptzcmd&home&" + config.panspeed + "&" + config.tiltspeed + "";
+			var loc = base_url + "/ptz.cgi?gotopresetname=home&speed=" + config.panspeed;
 			break;
 
 		case 'stop':
 
 			var loc = base_url + "/ptzctrl.cgi?ptzcmd&ptzstop";
+			var loc = base_url + "/ptz.cgi?continuouspantiltmove=0,0&continuouszoommove=0"
 			break;
 	}
 
@@ -787,10 +802,11 @@ Mousetrap.bind('z', function(e) {
 	return false;
 }, 'keyup');
 
-const {remote} = require('electron');
-const {app} = remote;
+// const { CameraFactory } = require('./cameras/CameraFactory');
+// const {remote} = require('electron');
+// const {app} = remote;
 
-app.on('before-quit', () => {
-	// reset the camera to home position before closing the application
-	cam_pantilt(1, 'home');
-})
+// app.on('before-quit', () => {
+// 	// reset the camera to home position before closing the application
+// 	cam_pantilt(1, 'home');
+// })
