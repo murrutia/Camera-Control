@@ -21,6 +21,5 @@ contextBridge.exposeInMainWorld(
                 ipcRendered.on(channel, (event, ...args) => func(...args))
             }
         }
-
     }
 )

@@ -1,8 +1,10 @@
 // You have to require all classes of camera types
-const CameraGeneric = require('./CameraPtzoptics.js')
+const CameraPtzoptics = require('./CameraPtzoptics')
+const CameraVapix3 = require('./CameraVapix3')
 
 const CLASSES = {
-    CameraGeneric
+    CameraPtzoptics,
+    CameraVapix3
 }
 
 const capitalize = ([firstLetter, ...restOfWord]) => firstLetter.toUpperCase() + restOfWord.join('')
@@ -10,7 +12,9 @@ const capitalize = ([firstLetter, ...restOfWord]) => firstLetter.toUpperCase() +
 class CameraFactory {
     
     generate(type, ip_address) {
-        class_name = `Camera${capitalize(type)}`
+        console.log('generate CameraFactory', type, ip_address)
+        const class_name = `Camera${capitalize(type)}`
+        console.log(CLASSES[class_name])
         return new CLASSES[class_name](ip_address)
     }
 }

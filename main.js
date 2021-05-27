@@ -54,11 +54,31 @@ function createWindow () {
 	});
 
 	// Garbage collection
-	mainWindow.on('closed', () => {
-		mainWindow = null;
-	});
+	mainWindow.on('closed', () => { mainWindow = null; });
 
 	// require('./menu');
 };
 
 app.whenReady().then(() => createWindow())
+
+// require('./camera-control')(mainWindow)
+
+const { ipcMain } = require('electron')
+const CameraFactory = require('./js/cameras/CameraFactory')
+
+let camera // will store the current active camera
+
+ipcMain.on('camera-init', (event, type, ip_address) => {
+	camera = CameraFactory.generate(type, ip_address)
+	mainWindow.webContents.send('camera-response', 'Camera generated')
+})
+
+ipcMain.on('camera-action', (event, action, ...args) => {
+	let msg
+	if (camera.action(action, ...args)) {
+		msg = 'Order sent to the camera'
+	} else {
+		msg = `The action ${action} is not implemented for this camera`
+	}
+	mainWindow.webContents.send('camera-response', msg)
+})

@@ -3,6 +3,24 @@ var camera_ip = "192.168.0.190";
 // var base_url = "http://" + camera_ip + "/cgi-bin";
 var base_url = "http://" + camera_ip + "/axis-cgi/com/";
 
+let camera // will store the Camera instance globally
+class Camera {
+	constructor(type, ip_address) {
+		console.log('Camera constructor index.js', type, ip_address)
+		this._type = type
+		this._ip_address = ip_address
+		this.update_server_camera()
+	}
+
+	update_server_camera() {
+		window.api.send('camera-init', this._type, this._ip_address)
+	}
+
+	action(...args) {
+		window.api.send('camera-action', ...args)
+	}
+}
+
 // config defaults
 var defaults = {
     ip: camera_ip,
@@ -32,7 +50,7 @@ function get_config () {
 
 function save_config () {
 	localStorage.setItem('configStorage', JSON.stringify(config));
-	console.log(config);
+	console.log('save_config', config);
 }
 
 function run_action (action_url) {
@@ -60,6 +78,9 @@ function config_init () {
 
 	// set the initial IP value for the camera ip input
 	$("#cam_ip").val(config.ip);
+	$("#cam_type").val(config.type)
+	camera = new Camera(config.type, config.ip)
+
 	// base_url = "http://" + config.ip + "/cgi-bin";
 	base_url = "http://" + config.ip + "/axis-cgi/com/";
 
@@ -178,8 +199,9 @@ function reload_cam () {
 	config.ip = $('#cam_ip').val();
 	if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(config.ip)) {
 
-		config.ip = config.ip;
+		config.type = $("#cam_type").val()
 		save_config();
+		camera = new Camera(config.type, config.ip)
 
 		alert("New IP address saved.");
 
@@ -801,12 +823,3 @@ Mousetrap.bind('z', function(e) {
 	cam_zoom(1, 'zoomstop');
 	return false;
 }, 'keyup');
-
-// const { CameraFactory } = require('./cameras/CameraFactory');
-// const {remote} = require('electron');
-// const {app} = remote;
-
-// app.on('before-quit', () => {
-// 	// reset the camera to home position before closing the application
-// 	cam_pantilt(1, 'home');
-// })
